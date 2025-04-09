@@ -14,7 +14,6 @@ let results = undefined;
 let logging = false;
 let allData = []
 
-let image = document.querySelector("#myimage")
 
 
 /********************************************************************
@@ -33,7 +32,7 @@ const createHandLandmarker = async () => {
     console.log("model loaded, you can start webcam")
     
     enableWebcamButton.addEventListener("click", (e) => enableCam(e))
-    logButton.addEventListener("click", (e) => startCountdown())
+    logButton.addEventListener("click", (e) => startCountdown(2))
 }
 
 /********************************************************************
@@ -66,7 +65,6 @@ async function predictWebcam() {
     let hand = results.landmarks[0]
     if(hand) {
         let thumb = hand[4]
-        image.style.transform = `translate(${video.videoWidth - thumb.x * video.videoWidth}px, ${thumb.y * video.videoHeight}px)`
     }
 
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -116,10 +114,6 @@ function startCountdown(seconds) {
 function logAllHands(label) {
     let data = []
     for (let pose of results.landmarks[0]) {
-        // console.log(`Label: ${JSON.stringify(label)}`)
-        // console.log(`Here is my object: ${JSON.stringify(pose[0], null, 2)}`);// Example: nose
-        // You can log others like pose[11] (left shoulder), pose[23] (left hip), etc.
-
         data.push(pose.x, pose.y, pose.z)
     }
     allData.push({points: data, label: label})
