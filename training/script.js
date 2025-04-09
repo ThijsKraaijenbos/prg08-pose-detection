@@ -17,12 +17,12 @@ function startTraining() {
 
 function finishedTraining() {
     console.log("finished training!")
-    let demopose = posedata[10].data
+    let demopose = posedata[10].points
     nn.classify(demopose, (results) => {
         console.log(`i think this is a ${results[0].label}`)
         console.log(`${(results[0].confidence.toFixed(2)) * 100}% sure`)
     })
-    nn.save()
+    // nn.save()
 }
 
 startTraining()
