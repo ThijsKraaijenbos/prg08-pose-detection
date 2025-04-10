@@ -12,7 +12,7 @@ function startTraining() {
     }
 
     nn.normalizeData()
-    nn.train({epochs:50}, finishedTraining)
+    nn.train({epochs:75}, finishedTraining)
 }
 
 function finishedTraining() {

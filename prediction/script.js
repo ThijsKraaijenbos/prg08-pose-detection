@@ -6,6 +6,9 @@ const canvasElement = document.getElementById("output_canvas");
 const canvasCtx = canvasElement.getContext("2d");
 const displayOutputText = document.getElementById("predictionVal")
 
+const controlsTag = document.getElementById('controlsVal');
+let inputControls = true
+
 const audioTag = document.getElementById("customAudio")
 const seekbar = document.getElementById('seekbar');
 const durationElmt = document.getElementById('duration');
@@ -85,6 +88,8 @@ async function predictWebcam() {
     let hand = results.landmarks[0]
     if(hand) {
         classifyPose()
+    } else if (displayOutputText.innerText !== "No input detected") {
+        displayOutputText.innerText = "No input detected"
     }
 
     // canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -101,22 +106,32 @@ async function predictWebcam() {
 function classifyPose(){
 
     let numbersonly = []
-    let hand1 = results.landmarks[0]
-    let hand2 = results.landmarks[1] ?? null
+    let hand = results.landmarks[0]
 
-    for (let point of hand1) {
+    for (let point of hand) {
         numbersonly.push(point.x,point.y,point.z)
     }
-
-    if (hand2 !== null) {
-    for (let point of hand2) {
-        numbersonly.push(point.x,point.y,point.z)
-    }
-    }
-    // console.log(numbersonly)
 
     nn.classify(numbersonly, (results) => {
-        displayOutputText.innerText = results[0].label
+
+        switch (results[0].label) {
+            case "Play":
+                displayOutputText.innerText = "Playing music"
+                break;
+            case "Pause":
+                displayOutputText.innerText = "Pausing music"
+                break;
+            case "VolumeUp":
+                displayOutputText.innerText = "Raising volume"
+                break;
+            case "VolumeDown":
+                displayOutputText.innerText = "Lowering volume"
+                break;
+            case "ToggleControls":
+                displayOutputText.innerText = "Toggling camera input controls"
+                break;
+        }
+
         updateAudioTag(results[0].label)
     })
 }
@@ -129,11 +144,24 @@ function updateAudioTag(updateType) {
         lastUpdateType = updateType
         return
     }
-    if (updateCounter < 50) {
+    if (updateCounter < 30) {
         updateCounter++
         lastUpdateType = updateType
         return;
     }
+
+    if (updateType === "ToggleControls") {
+        updateCounter++
+        //Check for 1 extra frame and then lock the toggle based on the fact that it only
+        //fires on the 31st frame, so it doesn't toggle every frame.
+        //(locking on the 30th frame doesn't work because of the if statement earlier in the function)
+        if (updateCounter === 31) {
+            inputControls = !inputControls
+            inputControls ? controlsTag.innerText = `Inputs are turned on` : controlsTag.innerText = `Inputs are turned off`
+        }
+        return;
+    }
+
 
     switch (updateType) {
         case "Play":
@@ -146,20 +174,20 @@ function updateAudioTag(updateType) {
 
         case "VolumeUp":
             volumeTag.innerText = `Volume: ${(audioTag.volume * 100).toFixed(0)}%`
-            if (audioTag.volume > 0.998) {
+            if (audioTag.volume > 0.997) {
                 audioTag.volume = 1
                 return;
             }
-            audioTag.volume += 0.002 //changeamount can be negative, this will just add the negative amount which lowers it
+            audioTag.volume += 0.003 //changeamount can be negative, this will just add the negative amount which lowers it
             break;
 
         case "VolumeDown":
             volumeTag.innerText = `Volume: ${(audioTag.volume * 100).toFixed(0)}%`
-            if (audioTag.volume < 0.002) {
+            if (audioTag.volume < 0.003) {
                 audioTag.volume = 0
                 return;
             }
-            audioTag.volume -= 0.002 //changeamount can be negative, this will just add the negative amount which lowers it
+            audioTag.volume -= 0.003 //changeamount can be negative, this will just add the negative amount which lowers it
             break;
     }
 }
