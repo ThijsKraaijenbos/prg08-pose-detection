@@ -12,7 +12,7 @@ function startTraining() {
     }
 
     nn.normalizeData()
-    nn.train({epochs:40}, finishedTraining)
+    nn.train({epochs:50}, finishedTraining)
 }
 
 function finishedTraining() {
@@ -22,7 +22,7 @@ function finishedTraining() {
         console.log(`i think this is a ${results[0].label}`)
         console.log(`${(results[0].confidence.toFixed(2)) * 100}% sure`)
     })
-    // nn.save()
+    nn.save()
 }
 
 startTraining()

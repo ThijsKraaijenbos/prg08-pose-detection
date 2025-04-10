@@ -84,7 +84,6 @@ async function predictWebcam() {
 
     let hand = results.landmarks[0]
     if(hand) {
-        let thumb = hand[4]
         classifyPose()
     }
 
@@ -102,9 +101,17 @@ async function predictWebcam() {
 function classifyPose(){
 
     let numbersonly = []
-    let hand = results.landmarks[0]
-    for (let point of hand) {
+    let hand1 = results.landmarks[0]
+    let hand2 = results.landmarks[1] ?? null
+
+    for (let point of hand1) {
         numbersonly.push(point.x,point.y,point.z)
+    }
+
+    if (hand2 !== null) {
+    for (let point of hand2) {
+        numbersonly.push(point.x,point.y,point.z)
+    }
     }
     // console.log(numbersonly)
 

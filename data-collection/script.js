@@ -32,7 +32,7 @@ const createHandLandmarker = async () => {
     console.log("model loaded, you can start webcam")
     
     enableWebcamButton.addEventListener("click", (e) => enableCam(e))
-    logButton.addEventListener("click", (e) => startCountdown(2))
+    logButton.addEventListener("click", (e) => startCountdown(3))
 }
 
 /********************************************************************
@@ -98,9 +98,8 @@ function startCountdown(seconds) {
                 const logInterval = setInterval(() => {
                     logAllHands(label)
                     loggedPoseCount++
-                    if (loggedPoseCount === 50) {
+                    if (loggedPoseCount === 250) {
                         clearInterval(logInterval)
-                        console.log("Finished Logging")
                     }
                 }, 100)
 
@@ -113,8 +112,17 @@ function startCountdown(seconds) {
 }
 function logAllHands(label) {
     let data = []
-    for (let pose of results.landmarks[0]) {
-        data.push(pose.x, pose.y, pose.z)
+    let hand1 = results.landmarks[0]
+    let hand2 = results.landmarks[1] ?? null
+
+    for (let point of hand1) {
+        data.push(point.x, point.y, point.z)
+    }
+
+    if (hand2 !== null) {
+        for (let point of hand2) {
+            data.push(point.x,point.y,point.z)
+        }
     }
     allData.push({points: data, label: label})
     console.log(allData)
