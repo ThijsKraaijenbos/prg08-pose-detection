@@ -146,20 +146,20 @@ function updateAudioTag(updateType) {
 
         case "VolumeUp":
             volumeTag.innerText = `Volume: ${(audioTag.volume * 100).toFixed(0)}%`
-            if (audioTag.volume > 0.99) {
+            if (audioTag.volume > 0.998) {
                 audioTag.volume = 1
                 return;
             }
-            audioTag.volume += 0.01 //changeamount can be negative, this will just add the negative amount which lowers it
+            audioTag.volume += 0.002 //changeamount can be negative, this will just add the negative amount which lowers it
             break;
 
         case "VolumeDown":
             volumeTag.innerText = `Volume: ${(audioTag.volume * 100).toFixed(0)}%`
-            if (audioTag.volume < 0.01) {
+            if (audioTag.volume < 0.002) {
                 audioTag.volume = 0
                 return;
             }
-            audioTag.volume -= 0.01 //changeamount can be negative, this will just add the negative amount which lowers it
+            audioTag.volume -= 0.002 //changeamount can be negative, this will just add the negative amount which lowers it
             break;
     }
 }
