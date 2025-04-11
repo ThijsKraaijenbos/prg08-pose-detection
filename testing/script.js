@@ -1,4 +1,3 @@
-// import data from './data.json' with {type: "json"}
 import testdata from './testData.json' with {type: "json"}
 let nn
 

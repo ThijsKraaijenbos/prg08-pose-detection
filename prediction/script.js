@@ -49,6 +49,7 @@ const createHandLandmarker = async () => {
     });
     console.log("model loaded, you can start webcam")
 
+    loadPlayList()
     enableCam()
 }
 
@@ -90,6 +91,7 @@ async function predictWebcam() {
         classifyPose()
     } else if (displayOutputText.innerText !== "No input detected") {
         displayOutputText.innerText = "No input detected"
+        updateCounter = 0
     }
 
     // canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -114,8 +116,7 @@ function classifyPose(){
 
     nn.classify(numbersonly, (results) => {
         //needs high confidence to work
-        console.log(results)
-        if (results[0].confidence < 0.99) {
+        if (results[0].confidence < 0.98) {
             return
         }
         switch (results[0].label) {
@@ -143,6 +144,7 @@ function classifyPose(){
 function updateAudioTag(updateType) {
     //Check for 50 frames if the prediction is the same
     //This fixes individual frames accidentally randomly causing updates when the algorithm is being goofy
+    console.log(updateType)
     if (updateType !== lastUpdateType) {
         updateCounter = 0
         lastUpdateType = updateType
@@ -156,6 +158,7 @@ function updateAudioTag(updateType) {
 
     if (updateType === "ToggleControls") {
         updateCounter++
+        console.log("TOGGLING CONTROLS")
         //Check for 1 extra frame and then lock the toggle based on the fact that it only
         //fires on the 31st frame, so it doesn't toggle every frame.
         //(locking on the 30th frame doesn't work because of the if statement earlier in the function)
@@ -172,7 +175,9 @@ function updateAudioTag(updateType) {
 
     switch (updateType) {
         case "Play":
-            audioTag.play()
+            if (audioTag.src !== "none") {
+                audioTag.play()
+            }
             break;
 
         case "Pause":
@@ -219,57 +224,11 @@ function formatTime(time) {
     return `${minutes}:${seconds}`;
 }
 
-/********************************************************************
-// LOG HAND COORDINATES IN THE CONSOLE
-********************************************************************/
-// function startCountdown(seconds) {
-//     logging = true
-//     let counter = seconds;
-//     let loggedPoseCount = 0
-//     let label = document.getElementById("labelInput").value
-//
-//     if (logging === true) {
-//         const interval = setInterval(() => {
-//             console.log(counter);
-//             counter--;
-//
-//             if (counter < 0 ) {
-//                 clearInterval(interval);
-//
-//                 const logInterval = setInterval(() => {
-//                     logAllHands(label)
-//                     loggedPoseCount++
-//                     if (loggedPoseCount === 50) {
-//                         clearInterval(logInterval)
-//                         console.log("Finished Logging")
-//                     }
-//                 }, 100)
-//
-//
-//                 logging = false
-//                 console.log("Logging is now stopped")
-//             }
-//         }, 1000);
-//     }
-// }
-// function logAllHands(label) {
-//     let data = []
-//     for (let pose of results.landmarks[0]) {
-//         data.push(pose.x, pose.y, pose.z)
-//     }
-//     allData.push({points: data, label: label})
-//     console.log(allData)
-//     localStorage.setItem("handData", JSON.stringify(allData))
-// }
 
-/********************************************************************
-// START THE APP
-********************************************************************/
-// if (navigator.mediaDevices?.getUserMedia) {
-//     createHandLandmarker()
-// }
+function loadPlayList() {
+    const playlistElmt = document.getElementById("playlist")
 
-
+}
 
 
 
