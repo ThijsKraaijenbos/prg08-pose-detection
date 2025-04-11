@@ -56,7 +56,7 @@ const createHandLandmarker = async () => {
 // START THE WEBCAM
 ********************************************************************/
 async function enableCam() {
-    const videoView = document.querySelector(".videoView")
+    const videoView = document.getElementById("videoView")
     const loadingElmt = document.createElement("p")
     loadingElmt.innerText = "Loading webcam..."
     videoView.appendChild(loadingElmt)
@@ -70,7 +70,7 @@ async function enableCam() {
             canvasElement.style.height = video.videoHeight;
             canvasElement.width = video.videoWidth;
             canvasElement.height = video.videoHeight;
-            document.querySelector(".videoView").style.height = video.videoHeight + "px";
+            video.style.height = video.videoHeight + "px";
             predictWebcam();
             loadingElmt.remove()
         });
@@ -114,6 +114,7 @@ function classifyPose(){
 
     nn.classify(numbersonly, (results) => {
         //needs high confidence to work
+        console.log(results)
         if (results[0].confidence < 0.99) {
             return
         }
@@ -207,6 +208,11 @@ audioTag.addEventListener('timeupdate', () => {
     seekbar.value = audioTag.currentTime;
     durationElmt.textContent = formatTime(audioTag.currentTime);
 });
+
+seekbar.addEventListener('input', () => {
+    audioTag.currentTime = seekbar.value
+});
+
 function formatTime(time) {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60).toString().padStart(2, '0');

@@ -2,39 +2,53 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaPipe Handpose</title>
-    <link rel="stylesheet" href="./style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HandTunes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
     <script defer type="module" src="./script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 
-<body>
+<body class="bg-gray-900 text-white font-sans">
 
-    <section>
-        <h1>Handpose detection</h1>
-        <div class="videoView">
-            <div style="position: relative;">
-                <video id="webcam" style="position: absolute;" muted autoplay playsinline></video>
-                <canvas id="output_canvas" style="position: absolute; left: 0px; top: 0px;"></canvas>
-            </div>
+<section class="min-h-screen flex flex-col items-left justify- px-4 py-10">
+
+    <header class="absolute z-0 ">
+        <h1 class="text-4xl font-bold text-cyan-400">HandTunes</h1>
+    </header>
+
+    <div class="flex flex-row justify-center items-center ">
+        <div class="absolute left-0 text-center space-y-2 flex justify-center flex-col items-center bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 w-[20rem]">
+            <h1 id="predictionVal" class=" text-2xl font-bold text-gray-400 flex-1">No input detected</h1>
+            <h1 id="controlsVal" class="text-lg text-gray-300 flex-1">Inputs are turned on</h1>
         </div>
 
-        <div class="custom-audio-player">
-            <p class="audio-title">The Emptiness Machine - Linkin Park</p>
-            <div class="progress-container">
-                <input type="range" id="seekbar" value="0" step="0.01">
-                <span id="duration">0:00</span>
-                <p id="volume">Volume: 100%</p>
+        <div class="flex flex-col gap-4">
+            <div id="videoView" class="w-full relative h-[400px] min-w-[600px] border border-gray-700 rounded-xl overflow-hidden shadow-lg">
+                <video id="webcam" class="absolute w-full h-full object-cover z-0" muted autoplay playsinline></video>
+                <canvas id="output_canvas" class="absolute left-0 top-0 z-10 w-full h-full"></canvas>
             </div>
-            <audio id="customAudio" src="./music/The%20Emptiness%20Machine%20-%20Linkin%20Park.mp3"></audio>
-        </div>
 
-        <h1 id="predictionVal"></h1>
-        <h1 id="controlsVal"></h1>
-    </section>
+
+            <div class="custom-audio-player w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 space-y-4">
+                <p class="audio-title text-xl font-semibold text-center">The Emptiness Machine - Linkin Park</p>
+
+                <div class="progress-container space-y-2">
+                    <input type="range" id="seekbar" value="0" step="0.01"
+                           class="w-full accent-blue-500 h-2 rounded-lg cursor-pointer" />
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span id="duration">0:00</span>
+                        <p id="volume">Volume: 100%</p>
+                    </div>
+                </div>
+
+                <audio id="customAudio" src="./music/The%20Emptiness%20Machine%20-%20Linkin%20Park.mp3"></audio>
+            </div>
+        </div>
+    </div>
+</section>
+
 </body>
 
 </html>

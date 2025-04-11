@@ -98,7 +98,8 @@ function startCountdown(seconds) {
                 const logInterval = setInterval(() => {
                     logAllHands(label)
                     loggedPoseCount++
-                    if (loggedPoseCount === 250) {
+                    //Amount of times to log
+                    if (loggedPoseCount === 80) {
                         clearInterval(logInterval)
                     }
                 }, 100)
