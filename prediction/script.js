@@ -223,11 +223,19 @@ audioTag.addEventListener('timeupdate', () => {
 
     //Go to the next song in the playlist if current song is finished
     if (audioTag.currentTime === audioTag.duration) {
+        document.querySelector(".bg-blue-400").classList.remove("bg-blue-400")
+
         const currentSongIndex = parseInt(audioTag.dataset.songIndex.split("-")[1]);
-        const nextItem = document.getElementById(`songIndex-${audioTag.dataset.songIndex}`)
-        audioTag.dataset.songIndex = `${currentSongIndex + 1}`;
+        const nextItem = document.getElementById(`songIndex-${currentSongIndex + 1}`)
+        audioTag.dataset.songIndex = `songIndex-${currentSongIndex + 1}`;
+
         if (nextItem) {
+            const parentDiv = nextItem.parentElement
+
             audioTag.src = nextItem.dataset.filepath
+            audioTitle.innerText = nextItem.innerText
+            parentDiv.classList.add("bg-blue-400")
+            audioTag.play()
         } else {
             audioTag.src = ""
             audioTitle.innerText = "You've finished your playlist."
@@ -243,6 +251,11 @@ function formatTime(time) {
 
 
 async function loadPlayList() {
+    //add loading
+    const loading = document.createElement("h1")
+    loading.innerText = "loading playlist..."
+    playlist.appendChild(loading)
+
     try {
         const response = await fetch(`http://localhost:8000/api/playlist`, {
             method: 'GET',
@@ -252,12 +265,19 @@ async function loadPlayList() {
         console.log(songData)
 
         playlist.addEventListener("click", function (e) {
-            if (e.target.tagName === "H1") {
+            if (e.target.tagName === "H1" || e.target.classList.contains("song-item")) {
+                const prevItem = document.querySelector(".bg-blue-400")
+                if (prevItem) {
+                    prevItem.classList.remove("bg-blue-400")
+                }
 
-                audioTag.src = e.target.dataset.filepath
-                audioTitle.innerText = e.target.innerText
-                audioTag.dataset.songIndex = e.target.id
+                const parentDiv = e.target.closest(".song-item")
+                const h1 = parentDiv.children[0]
 
+                audioTag.src = h1.dataset.filepath
+                audioTitle.innerText = h1.innerText
+                audioTag.dataset.songIndex = h1.id
+                parentDiv.classList.add("bg-blue-400")
                 audioTag.play()
             }
         })
@@ -273,6 +293,9 @@ async function loadPlayList() {
         playlistInput.classList.remove("hidden")
     } catch (e) {
         console.log(e)
+    } finally {
+        //remove loading
+        playlist.children[0].remove()
     }
 }
 
@@ -301,7 +324,7 @@ async function uploadSong() {
 
 function PlaylistElement(songData) {
     const div = document.createElement("div")
-    div.className = "w-64 bg-gray-700 rounded-xl p-2 min-h-16 max-h-16 flex items-center justify-center shadow-lg border border-gray-700 space-y-4"
+    div.className = "song-item w-64 bg-gray-700 rounded-xl p-2 min-h-16 max-h-16 flex items-center justify-center shadow-lg border border-gray-700 space-y-4"
 
     const songItem = document.createElement("h1")
     songItem.id = `songIndex-${songIndex}`
