@@ -141,7 +141,7 @@ function classifyPose(){
                 displayOutputText.innerText = "Lowering volume"
                 break;
             case "ToggleControls":
-                displayOutputText.innerText = "Toggling camera input controls"
+                displayOutputText.innerText = "Toggling inputs"
                 break;
         }
 
@@ -183,8 +183,19 @@ function updateAudioTag(updateType) {
 
     switch (updateType) {
         case "Play":
-            if (audioTag.src !== "none") {
-                audioTag.play()
+            if (!audioTag.src || audioTag.src === window.location.href) {
+                const firstElmt = document.getElementById("songIndex-0");
+                if (firstElmt) {
+                    const parentDiv = firstElmt.parentElement
+
+                    audioTag.src = firstElmt.dataset.filepath;
+                    audioTitle.innerText = firstElmt.innerText;
+                    audioTag.dataset.songIndex = "0";
+                    parentDiv.classList.add("bg-blue-400")
+                    audioTag.play();
+                }
+            } else {
+                audioTag.play();
             }
             break;
 
