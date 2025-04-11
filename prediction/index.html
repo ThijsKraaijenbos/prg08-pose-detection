@@ -24,11 +24,11 @@
                 <h1 id="predictionVal" class=" text-xl font-bold text-gray-200 flex-1">No input detected</h1>
                 <h1 id="controlsVal" class="text-lg text-gray-200 flex-1">Inputs are turned on</h1>
             </div>
-            <div class="text-center space-y-2 flex justify-center flex-col items-center bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 w-[20rem]">
-                <label for="playlist" class="text-xl font-bold text-gray-200 flex-1">Playlist</label>
+            <div class="text-center space-y-2 flex justify-center flex-col items-center bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 w-[20rem] max-h-[30rem]">
+                <label for="playlist" class="text-xl font-bold text-gray-200">Playlist</label>
 
-                <input type="file" id="playlistInput">
-                <div id="playlist">
+                <input type="file" id="playlistInput" class="hidden" multiple accept="audio/mp3" />
+                <div id="playlist" class="flex flex-col overflow-x-hidden gap-4 p-2 flex-1">
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
 
 
             <div class="custom-audio-player w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 space-y-4">
-                <p class="audio-title text-xl font-semibold text-center text-gray-200">No audio selected</p>
+                <p id="audioTitle" class="audio-title text-xl font-semibold text-center text-gray-200">No audio selected</p>
 
                 <div class="progress-container space-y-2">
                     <input type="range" id="seekbar" value="0" step="0.01"

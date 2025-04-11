@@ -14,6 +14,7 @@ function createNeuralNetwork() {
 }
 
 function classifyTestData() {
+    console.log(testdata)
     for (let pose of testdata) {
         nn.classify(pose.points, (results) => {
             // console.log(results)

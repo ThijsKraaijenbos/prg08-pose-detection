@@ -1,4 +1,8 @@
-import { HandLandmarker, FilesetResolver, DrawingUtils } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
+import {
+    DrawingUtils,
+    FilesetResolver,
+    HandLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 
 // const enableWebcamButton = document.getElementById("webcamButton");
 const video = document.getElementById("webcam");
@@ -10,11 +14,15 @@ const controlsTag = document.getElementById('controlsVal');
 let controlsToggled = true
 
 const audioTag = document.getElementById("customAudio")
+const audioTitle = document.getElementById("audioTitle")
 const seekbar = document.getElementById('seekbar');
 const durationElmt = document.getElementById('duration');
 const volumeTag = document.getElementById('volume');
+const playlist = document.getElementById("playlist")
 let lastUpdateType = ""
 let updateCounter = 0
+
+let songIndex = 0
 
 const drawUtils = new DrawingUtils(canvasCtx);
 let handLandmarker = undefined;
@@ -81,7 +89,7 @@ async function enableCam() {
 }
 
 /********************************************************************
-// START PREDICTIONS    
+// START PREDICTIONS
 ********************************************************************/
 async function predictWebcam() {
     results = await handLandmarker.detectForVideo(video, performance.now())
@@ -205,17 +213,26 @@ function updateAudioTag(updateType) {
 }
 
 audioTag.addEventListener('loadedmetadata', () => {
+    // Set the seekbar's max value to the audio's duration
     seekbar.max = audioTag.duration;
-    console.log("Audio max =" + audioTag.duration)
 });
 
 audioTag.addEventListener('timeupdate', () => {
-    seekbar.value = audioTag.currentTime;
+    seekbar.value = audioTag.currentTime;  // Sync the seekbar with audio progress
     durationElmt.textContent = formatTime(audioTag.currentTime);
-});
 
-seekbar.addEventListener('input', () => {
-    audioTag.currentTime = seekbar.value
+    //Go to the next song in the playlist if current song is finished
+    if (audioTag.currentTime === audioTag.duration) {
+        const currentSongIndex = parseInt(audioTag.dataset.songIndex.split("-")[1]);
+        const nextItem = document.getElementById(`songIndex-${audioTag.dataset.songIndex}`)
+        audioTag.dataset.songIndex = `${currentSongIndex + 1}`;
+        if (nextItem) {
+            audioTag.src = nextItem.dataset.filepath
+        } else {
+            audioTag.src = ""
+            audioTitle.innerText = "You've finished your playlist."
+        }
+    }
 });
 
 function formatTime(time) {
@@ -225,11 +242,75 @@ function formatTime(time) {
 }
 
 
-function loadPlayList() {
-    const playlistElmt = document.getElementById("playlist")
+async function loadPlayList() {
+    try {
+        const response = await fetch(`http://localhost:8000/api/playlist`, {
+            method: 'GET',
+        });
 
+        const songData = await response.json();
+        console.log(songData)
+
+        playlist.addEventListener("click", function (e) {
+            if (e.target.tagName === "H1") {
+
+                audioTag.src = e.target.dataset.filepath
+                audioTitle.innerText = e.target.innerText
+                audioTag.dataset.songIndex = e.target.id
+
+                audioTag.play()
+            }
+        })
+
+        if (songData !== "") {
+            for (let song of songData) {
+                new PlaylistElement(song)
+            }
+        }
+
+        const playlistInput = document.getElementById("playlistInput")
+        playlistInput.addEventListener("change", uploadSong)
+        playlistInput.classList.remove("hidden")
+    } catch (e) {
+        console.log(e)
+    }
 }
 
+async function uploadSong() {
+    const files = document.getElementById("playlistInput").files
 
+    for (let file of files) {
+        const formData = new FormData();
+        formData.append('playlistInput', file);
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/playlist`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const songData = await response.json();
+            console.log(songData)
+            new PlaylistElement(songData)
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+function PlaylistElement(songData) {
+    const div = document.createElement("div")
+    div.className = "w-64 bg-gray-700 rounded-xl p-2 min-h-16 max-h-16 flex items-center justify-center shadow-lg border border-gray-700 space-y-4"
+
+    const songItem = document.createElement("h1")
+    songItem.id = `songIndex-${songIndex}`
+    songItem.dataset.filepath = songData.file_path
+    songItem.innerText = songData.name
+
+    div.appendChild(songItem)
+    playlist.appendChild(div)
+    songIndex++
+}
 
 createNeuralNetwork()
