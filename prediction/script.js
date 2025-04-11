@@ -166,7 +166,6 @@ function updateAudioTag(updateType) {
 
     if (updateType === "ToggleControls") {
         updateCounter++
-        console.log("TOGGLING CONTROLS")
         //Check for 1 extra frame and then lock the toggle based on the fact that it only
         //fires on the 31st frame, so it doesn't toggle every frame.
         //(locking on the 30th frame doesn't work because of the if statement earlier in the function)
@@ -335,14 +334,32 @@ async function uploadSong() {
 
 function PlaylistElement(songData) {
     const div = document.createElement("div")
-    div.className = "song-item w-64 bg-gray-700 rounded-xl p-2 min-h-16 max-h-16 flex items-center justify-center shadow-lg border border-gray-700 space-y-4"
+    div.className = "song-item relative w-64 bg-gray-700 rounded-xl p-2 min-h-16 max-h-16 flex items-center justify-center shadow-lg border border-gray-700 space-y-4"
 
     const songItem = document.createElement("h1")
     songItem.id = `songIndex-${songIndex}`
     songItem.dataset.filepath = songData.file_path
     songItem.innerText = songData.name
 
+    const removeButton = document.createElement("p")
+    removeButton.innerText = "X"
+    removeButton.className = "text-red-500 text-bold absolute right-1 top-0 !m-0"
+    removeButton.addEventListener("click", async function (e) {
+        try {
+            const result = await fetch(`http://localhost:8000/api/playlist/${songData.id}`, {
+                method: 'delete',
+            });
+            if (result) {
+                e.target.parentElement.remove()
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    })
+
     div.appendChild(songItem)
+    div.appendChild(removeButton)
     playlist.appendChild(div)
     songIndex++
 }

@@ -99,7 +99,7 @@ function startCountdown(seconds) {
                     logAllHands(label)
                     loggedPoseCount++
                     //Amount of times to log
-                    if (loggedPoseCount === 80) {
+                    if (loggedPoseCount === 125) {
                         clearInterval(logInterval)
                     }
                 }, 100)

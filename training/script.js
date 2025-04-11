@@ -3,7 +3,26 @@ let nn
 
 function startTraining() {
     ml5.setBackend('webgl')
-    nn = ml5.neuralNetwork({task: 'classification', debug: true})
+    const options = {
+        task: 'classification',
+        debug: true,
+        layers: [
+            {
+                type: 'dense',
+                units: 64,
+                activation: 'relu',
+            }, {
+                type: 'dense',
+                units: 64,
+                activation: 'relu',
+            },
+            {
+                type: 'dense',
+                activation: 'softmax',
+            },
+        ]
+    }
+    nn = ml5.neuralNetwork(options)
     console.log(nn)
 
     for(let pose of posedata) {
@@ -12,7 +31,7 @@ function startTraining() {
     }
 
     nn.normalizeData()
-    nn.train({epochs:75}, finishedTraining)
+    nn.train({epochs:100}, finishedTraining)
 }
 
 function finishedTraining() {
