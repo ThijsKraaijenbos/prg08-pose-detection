@@ -7,7 +7,7 @@ const canvasCtx = canvasElement.getContext("2d");
 const displayOutputText = document.getElementById("predictionVal")
 
 const controlsTag = document.getElementById('controlsVal');
-let inputControls = true
+let controlsToggled = true
 
 const audioTag = document.getElementById("customAudio")
 const seekbar = document.getElementById('seekbar');
@@ -113,7 +113,10 @@ function classifyPose(){
     }
 
     nn.classify(numbersonly, (results) => {
-
+        //needs high confidence to work
+        if (results[0].confidence < 0.99) {
+            return
+        }
         switch (results[0].label) {
             case "Play":
                 displayOutputText.innerText = "Playing music"
@@ -156,12 +159,15 @@ function updateAudioTag(updateType) {
         //fires on the 31st frame, so it doesn't toggle every frame.
         //(locking on the 30th frame doesn't work because of the if statement earlier in the function)
         if (updateCounter === 31) {
-            inputControls = !inputControls
-            inputControls ? controlsTag.innerText = `Inputs are turned on` : controlsTag.innerText = `Inputs are turned off`
+            controlsToggled = !controlsToggled
+            controlsToggled ? controlsTag.innerText = `Inputs are turned on` : controlsTag.innerText = `Inputs are turned off`
         }
         return;
     }
 
+    if (!controlsToggled) {
+        return
+    }
 
     switch (updateType) {
         case "Play":
