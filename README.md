@@ -9,3 +9,6 @@
 - Closed fist (possible with most rotations) = `Pause`
 - Pointing straight up = `Increase volume`
 - Pointing straight down = `Decrease volume`
+
+**URL to backend repo:**
+https://github.com/ThijsKraaijenbos/prg08-backend
